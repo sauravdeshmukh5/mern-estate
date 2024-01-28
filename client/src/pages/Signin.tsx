@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
+import {connect, useDispatch } from 'react-redux'
+import {AppDispatch, RootState} from '../redux/store.ts';
+import { signInFailure, signInStart, signInSuccess } from "../redux/user/userSlice.ts";
 
-function Singin() {
+type SigninProps = ReturnType<typeof mapStateToProps>;
+
+function Singin(props:SigninProps) {
+  const dispatch :AppDispatch= useDispatch()
   const [formdata, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const navigate=useNavigate();
   const handleChange = (e: any) => {
     setFormData({
@@ -15,7 +19,7 @@ function Singin() {
   const handleSumbit = async (e: any) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      dispatch(signInStart())
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
@@ -24,19 +28,15 @@ function Singin() {
         body: JSON.stringify(formdata),
       });
       const data = await res.json();
-      console.log(data,"Data")
       if(data.success === false){
-        setLoading(false)
-        setError(data.message);
+        dispatch(signInFailure(data.message))
         return;
       }
-  
-      setLoading(false);
-      setError(null);
+      dispatch(signInSuccess(data))
       navigate('/')
     } catch (error:any) {
-      setLoading(false);
-      setError(error.message)
+      dispatch(signInFailure(error.message))
+      
     }
    
   };
@@ -59,11 +59,11 @@ function Singin() {
           onChange={handleChange}
         />
         <button
-        disabled={loading}
+        disabled={props.user.loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           onClick={handleSumbit}
         >
-          {loading ? 'loading...':"Sign In"}
+          {props.user.loading ? 'loading...':"Sign In"}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
@@ -72,9 +72,14 @@ function Singin() {
           Sign Up
         </Link>
       </div>
-      {error && <p className="text-red-500 mt-5">{error}</p> }
+      {props.user.error && <p className="text-red-500 mt-5">{props.user.error}</p> }
     </div>
   );
 }
 
-export default Singin;
+function mapStateToProps(state: RootState) {
+  return {
+    user: state.user};
+}
+export default connect(mapStateToProps)(Singin);
+
