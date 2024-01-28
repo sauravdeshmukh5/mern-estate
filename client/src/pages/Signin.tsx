@@ -3,6 +3,7 @@ import { Link,useNavigate } from "react-router-dom";
 import {connect, useDispatch } from 'react-redux'
 import {AppDispatch, RootState} from '../redux/store.ts';
 import { signInFailure, signInStart, signInSuccess } from "../redux/user/userSlice.ts";
+import OAuth from "../component/OAuth.tsx";
 
 type SigninProps = ReturnType<typeof mapStateToProps>;
 
@@ -65,6 +66,7 @@ function Singin(props:SigninProps) {
         >
           {props.user.loading ? 'loading...':"Sign In"}
         </button>
+        <OAuth/>
       </form>
       <div className="flex gap-2 mt-5">
         <p>Dont' have an account?</p>
