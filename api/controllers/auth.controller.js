@@ -9,12 +9,12 @@ export const singup = async (req, res, next) => {
     const hashedPassword = bcryptjs.hashSync(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     try {
+        console.log(req.body,"req")
         await newUser.save();
         res.status(201).json('User created successfully');
     } catch (error) {
         next(error);
     }
-
 }
 
 export const singin = async (req, res, next) => {
