@@ -9,7 +9,7 @@ export const singup = async (req, res, next) => {
     const hashedPassword = bcryptjs.hashSync(password, 10);
     const newUser = new User({ username, email, password: hashedPassword });
     try {
-        console.log(req.body,"req")
+        console.log(req.body, "req")
         await newUser.save();
         res.status(201).json('User created successfully');
     } catch (error) {
@@ -57,3 +57,12 @@ export const google = async (req, res, next) => {
         next(error)
     }
 }
+
+export const signout = async (req, res, next) => {
+    try {
+        res.clearCookie('access_token');
+        res.status(200).json('User has been logged out!');
+    } catch (error) {
+        next(error);
+    }
+};

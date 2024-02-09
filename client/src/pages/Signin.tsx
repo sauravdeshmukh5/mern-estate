@@ -11,6 +11,7 @@ function Singin(props:SigninProps) {
   const dispatch :AppDispatch= useDispatch()
   const [formdata, setFormData] = useState({});
   const navigate=useNavigate();
+  console.log(props.user.currentUser)
   const handleChange = (e: any) => {
     setFormData({
       ...formdata,

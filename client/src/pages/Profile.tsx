@@ -12,6 +12,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -26,7 +29,7 @@ function Profile(props: ProfileProps) {
   const [imgFilePerc, setImgFilePerc] = useState(0);
   const [fileError, setfileError] = useState(false);
   const [formData, setFormData] = useState<any>({});
-  const [updateSuccess,setUpdateSuccess]=useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -65,20 +68,23 @@ function Profile(props: ProfileProps) {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/api/user/update/${props.user.currentUser._id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `/api/user/update/${props.user.currentUser._id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = res.json();
       if (data.success === false) {
         dispatch(updateUserFailure(data.message));
         return;
       }
       dispatch(updateUserSuccess(data));
-      setUpdateSuccess(true)
+      setUpdateSuccess(true);
     } catch (error: any) {
-      console.log(error,"error")
+      console.log(error, "error");
       dispatch(updateUserFailure(error.message));
     }
   };
@@ -86,8 +92,28 @@ function Profile(props: ProfileProps) {
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${props.user.currentUser._id}`, {
-        method: 'DELETE',
+      const res = await fetch(
+        `/api/user/delete/${props.user.currentUser._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    } catch (error: any) {
+      dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserStart());
+      const res = await fetch('/api/auth/signout',{
+        method:"GET",
       });
       const data = await res.json();
       if (data.success === false) {
@@ -96,6 +122,7 @@ function Profile(props: ProfileProps) {
       }
       dispatch(deleteUserSuccess(data));
     } catch (error:any) {
+      console.log(error.message,"error")
       dispatch(deleteUserFailure(error.message));
     }
   };
@@ -151,13 +178,23 @@ function Profile(props: ProfileProps) {
           id="password"
           onChange={handleChange}
         />
-        <button disabled={props.user.loading} className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-         {props.user.loading ? "...loading":"Update"}
+        <button
+          disabled={props.user.loading}
+          className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {props.user.loading ? "...loading" : "Update"}
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign out</span>
+        <span
+          onClick={handleDeleteUser}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Sign out
+        </span>
       </div>
       <p className="text-red-700 mt-5">
         {props.user.error ? props.user.error : " "}
