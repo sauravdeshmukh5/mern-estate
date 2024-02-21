@@ -19,7 +19,7 @@ import {
   updateUserStart,
   updateUserSuccess,
 } from "../redux/user/userSlice";
-
+import { Link } from "react-router-dom";
 type ProfileProps = ReturnType<typeof mapStateToProps>;
 
 function Profile(props: ProfileProps) {
@@ -184,6 +184,8 @@ function Profile(props: ProfileProps) {
         >
           {props.user.loading ? "...loading" : "Update"}
         </button>
+        <Link to='/create-listing' className="bg-green-700 text-white p-3 rounded-lg text-center hover:opacity-95">Create Listing</Link>
+
       </form>
       <div className="flex justify-between mt-5">
         <span
